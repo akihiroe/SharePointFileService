@@ -1,0 +1,89 @@
+﻿@model SharePoint.FileServiceWeb.Models.FilesViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2><a href="@Url.RouteUrl("files", new { id = Model.CurrentFolder} )"><span class="glyphicon glyphicon-folder-open" style="color:wheat;margin-right:10px;"></span>@(Model.CurrentFolder)</a></h2>
+<ul style="margin-top:20px;">
+    @foreach (var item in Model.Items)
+    {
+        switch (item.Type)
+        {
+            case System.Net.FtpClient.FtpFileSystemObjectType.Directory:
+                <li><a href="@Url.RouteUrl("files", new { id =  item.FullName + "/" } )"><span class="glyphicon glyphicon-folder-close" style="color:wheat;margin-right:5px;"></span>@(item.Name)</a></li>
+                break;
+            case System.Net.FtpClient.FtpFileSystemObjectType.File:
+                <li><a href="@Url.RouteUrl("files", new { id =  item.FullName} )"><span class="glyphicon glyphicon-file" style="color:lightgray;margin-right:5px;"></span>@(item.Name)</a></li>
+                break;
+        }
+    }
+
+</ul>
+
+@section scripts{
+
+<script type="text/javascript">
+    var hostweburl;
+    $(function () {
+
+
+        //Get the URI decoded URL.
+        hostweburl =
+            decodeURIComponent(
+                getQueryStringParameter("SPHostUrl")
+        );
+
+        // The SharePoint js files URL are in the form:
+        // web_url/_layouts/15/resource
+        var scriptbase = hostweburl + "/_layouts/15/";
+
+        if (getQueryStringParameter("SPHostUrl")) {
+            // Load the js file and continue to the
+            //   success handler
+            $.getScript(scriptbase + "SP.UI.Controls.js", renderChrome);
+        }
+
+    });
+
+    // Callback for the onCssLoaded event defined
+    //  in the options object of the chrome control
+    function chromeLoaded() {
+        $("#appTitle").show();
+    }
+
+    // Render Option
+    function renderChromeOption() {
+    }
+
+    //Function to prepare the options and render the control
+    function renderChrome() {
+        var options = {
+            "onCssLoaded": "chromeLoaded()",
+        };
+
+        var nav = new SP.UI.Controls.Navigation(
+                                "chrome_ctrl_placeholder",
+                                options
+                            );
+        nav.setVisible(true);
+        renderChromeOption();
+    }
+
+    function getQueryStringParameter(paramToRetrieve) {
+        if (document.URL.split("?").length <= 1) return undefined;
+
+        var params =
+            document.URL.split("?")[1].split("&");
+        var strParams = "";
+        for (var i = 0; i < params.length; i = i + 1) {
+            var singleParam = params[i].split("=");
+            if (singleParam[0] == paramToRetrieve)
+                return singleParam[1];
+        }
+    }
+</script>
+}
+
+
+
+

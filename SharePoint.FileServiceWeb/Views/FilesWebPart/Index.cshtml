@@ -1,0 +1,73 @@
+﻿@model SharePoint.FileServiceWeb.Models.FilesViewModel
+@{
+    ViewBag.Title = "Index";
+}
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript">
+        // クライアント Web パーツ ページのスタイルをホスト Web と一致するように設定します。
+        (function () {
+            'use strict';
+
+            var hostUrl = '';
+            var link = document.createElement('link');
+            link.setAttribute('rel', 'stylesheet');
+            if (document.URL.indexOf('?') != -1) {
+                var params = document.URL.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var p = decodeURIComponent(params[i]);
+                    if (/^SPHostUrl=/i.test(p)) {
+                        hostUrl = p.split('=')[1];
+                        link.setAttribute('href', hostUrl + '/_layouts/15/defaultcss.ashx');
+                        break;
+                    }
+                }
+            }
+            if (hostUrl == '') {
+                link.setAttribute('href', '/_layouts/15/1033/styles/themable/corev15.css');
+            }
+            document.head.appendChild(link);
+        })();
+
+        /*WebParts Resize*/
+        $(document).ready(function () {
+            getParameterByName = function (name) {
+                var match = RegExp('[?&]' + name + '=([^&]*)')
+                .exec(window.location.search);
+                return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+            };
+            try {
+                var target = parent.postMessage ? parent : (parent.document.postMessage ? parent.document : undefined);
+                var height = jQuery('#cont').outerHeight(true);
+                var width = "100%";
+
+                target.postMessage('<message senderId=' + getParameterByName("SenderId") + '>resize(' + width + ',' + height + ')</message>', '*');
+            } catch (e) {
+                alert(e);
+            }
+        });
+
+    </script>
+</head>
+<body>
+    <div id="cont">
+        <h2><a href="@Url.RouteUrl("files", new { id = Model.CurrentFolder} )"><span class="glyphicon glyphicon-folder-open" style="color:wheat;margin-right:10px;"></span>@(Model.CurrentFolder)</a></h2>
+        <ul style="margin-top:20px;">
+            @foreach (var item in Model.Items)
+            {
+                switch (item.Type)
+                {
+                    case System.Net.FtpClient.FtpFileSystemObjectType.Directory:
+                        <li><a href="@Url.RouteUrl("webparts", new { id =  item.FullName + "/" } )"><span class="glyphicon glyphicon-folder-close" style="color:wheat;margin-right:5px;"></span>@(item.Name)</a></li>
+                        break;
+                    case System.Net.FtpClient.FtpFileSystemObjectType.File:
+                        <li><a href="@Url.RouteUrl("webparts", new { id =  item.FullName} )"><span class="glyphicon glyphicon-file" style="color:lightgray;margin-right:5px;"></span>@(item.Name)</a></li>
+                        break;
+                }
+            }
+
+        </ul>
+    </div>
+</body>
+</html>

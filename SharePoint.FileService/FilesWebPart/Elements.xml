@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <ClientWebPart Name="FilesWebPart" Title="Files" Description="File Server Files" DefaultWidth="600" DefaultHeight="400">
+
+    <!-- Content 要素は、クライアント Web パーツ内でレンダリングされるページの場所を特定します
+         プロパティは、パターン _propertyName_ を使用してクエリ文字列で参照されます
+         例: Src="~appWebUrl/Pages/ClientWebPart1.aspx?Property1=_property1_" -->
+    <Content Type="html" Src="~remoteAppUrl/w/?{StandardTokens}" />
+
+    <!-- Properties 要素でプロパティを定義します。
+         上の Content 要素の Src 属性には、必ずプロパティ名を指定してください。 -->
+    <Properties>
+    </Properties>
+
+  </ClientWebPart>
+</Elements>
